@@ -19,12 +19,12 @@ public class GameField
         };
         GameField gamefield = new GameField(sodukoData);
 
-        System.out.println(Arrays.toString(gamefield.quadrants[8].getNumbers()));
+        gamefield.showSoduko();
     }
 
     public GameField(byte[][] sodukoData)
     {
-        for(int i = 0;i<9;i++)
+        for (int i = 0; i < 9; i++)
         {
             quadrants[i] = new Quadrant();
         }
@@ -42,10 +42,10 @@ public class GameField
         for (int reps = 0; reps < 9; reps++)
         {
             //Durch einen Quadranten gehen
-            for (byte dataRow = rowStartPos; dataRow < rowStartPos+3; dataRow++)
+            for (byte dataRow = rowStartPos; dataRow < rowStartPos + 3; dataRow++)
             {
                 //Durch alle 3 Reihen gehen
-                for (byte rowField = fieldStartPos; rowField < fieldStartPos+3; rowField++)
+                for (byte rowField = fieldStartPos; rowField < fieldStartPos + 3; rowField++)
                 {
                     quadrantData[reps][counter] = sodukoData[dataRow][rowField];
                     counter++;
@@ -56,7 +56,8 @@ public class GameField
             counter = 0;
 
             //Ab in die nächste Quadrantenreihe
-            if(fieldStartPos==9) {
+            if (fieldStartPos == 9)
+            {
                 fieldStartPos = 0;
                 rowStartPos += 3;
             }
@@ -64,11 +65,49 @@ public class GameField
         return quadrantData;
     }
 
-    public void fillQuadrants(byte[][] quadrantData) {
+    public void fillQuadrants(byte[][] quadrantData)
+    {
 
         for (byte i = 0; i < 9; i++)
         {
             quadrants[i].fillQuadrant(quadrantData[i]);
+        }
+    }
+
+    public void showSoduko()
+    {
+        byte[][] soduko = new byte[9][9];
+        byte rowPos = 0;
+        byte fieldPos = 0;
+
+        for (Quadrant quadrant : quadrants)
+        {
+            byte[] temp = quadrant.getNumbers();
+
+            byte counter = 0;
+
+            for(int i = 0;i<3;i++)
+            {
+                for(int j = 0;j<3;i++)
+                {
+                    //TODO Hier gibt es ein Problem. In Matrix einfügen funktioniert noch nicht so gut
+                    /*System.out.println(counter);
+                    soduko[i][j] = temp[counter];
+                    counter++;*/
+                }
+            }
+        }
+        fieldPos += 3;
+
+        if(fieldPos==9)
+        {
+            rowPos += 3;
+            fieldPos = 0;
+        }
+
+        for (byte[] arr : soduko)
+        {
+            System.out.println(Arrays.toString(arr));
         }
     }
 }
