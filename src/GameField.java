@@ -79,30 +79,35 @@ public class GameField
         byte[][] soduko = new byte[9][9];
         byte rowPos = 0;
         byte fieldPos = 0;
+        byte fieldPosOffset = 0;
+        byte rowPosOffset = 0;
 
-        for (Quadrant quadrant : quadrants)
+        for (int q = 0; q < 9; q++)
         {
-            byte[] temp = quadrant.getNumbers();
+            byte[] temp = quadrants[q].getNumbers();
 
-            byte counter = 0;
-
-            for(int i = 0;i<3;i++)
+            for (int i = 0; i < 9; i++)
             {
-                for(int j = 0;j<3;i++)
+                soduko[rowPos][fieldPos] = temp[i];
+                fieldPos++;
+
+                if (fieldPos % 3 == 0)
                 {
-                    //TODO Hier gibt es ein Problem. In Matrix einfügen funktioniert noch nicht so gut
-                    /*System.out.println(counter);
-                    soduko[i][j] = temp[counter];
-                    counter++;*/
+                    rowPos++;
+                    fieldPos = fieldPosOffset;
                 }
             }
-        }
-        fieldPos += 3;
+            fieldPosOffset += 3;
+            fieldPos = fieldPosOffset;
+            rowPos = rowPosOffset;
 
-        if(fieldPos==9)
-        {
-            rowPos += 3;
-            fieldPos = 0;
+            if (fieldPos == 9)
+            {
+                rowPosOffset += 3;
+                rowPos = rowPosOffset;
+                fieldPosOffset = 0;
+                fieldPos = fieldPosOffset;
+            }
         }
 
         for (byte[] arr : soduko)
