@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Quadrant
 {
     public Row[] rows = new Row[3];

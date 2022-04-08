@@ -19,7 +19,9 @@ public class GameField
         };
         GameField gamefield = new GameField(sodukoData);
 
-        gamefield.showSoduko();
+        gamefield.solve();
+
+        //gamefield.showSoduko();
     }
 
     public GameField(byte[][] sodukoData)
@@ -67,7 +69,6 @@ public class GameField
 
     public void fillQuadrants(byte[][] quadrantData)
     {
-
         for (byte i = 0; i < 9; i++)
         {
             quadrants[i].fillQuadrant(quadrantData[i]);
@@ -114,5 +115,36 @@ public class GameField
         {
             System.out.println(Arrays.toString(arr));
         }
+    }
+
+    public void solve()
+    {
+        byte[] temp = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+        //Reihen im Quadranten durchgehen
+        for (int row = 0; row < 3; row++)
+        {
+            for (int num = 0; num < 3; num++)
+            {
+                //System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
+
+                Quadrant currenctQuadrant = quadrants[0];
+                NumberField currentField = currenctQuadrant.rows[row].numberFields[num];
+                if (currentField.getPossibleNumbers().length != 1)
+                {
+                    for (byte number : currenctQuadrant.getNumbers())
+                    {
+                        if (number == 0) continue;
+                        currentField.removeNumber(number);
+                    }
+                    //System.out.println("Bearbeitung erforderlich");
+                    System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
+                } else
+                {
+                    System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
+                }
+            }
+        }
+
     }
 }
