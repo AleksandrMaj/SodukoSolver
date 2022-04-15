@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Vector;
 
 public class GameField
 {
@@ -21,7 +23,7 @@ public class GameField
 
         gamefield.solve();
 
-        //gamefield.showSoduko();
+        gamefield.showSoduko();
     }
 
     public GameField(byte[][] sodukoData)
@@ -85,11 +87,11 @@ public class GameField
 
         for (int q = 0; q < 9; q++)
         {
-            byte[] temp = quadrants[q].getNumbers();
+            LinkedList<Byte> temp = quadrants[q].getNumbers();
 
             for (int i = 0; i < 9; i++)
             {
-                soduko[rowPos][fieldPos] = temp[i];
+                soduko[rowPos][fieldPos] = temp.get(i);
                 fieldPos++;
 
                 if (fieldPos % 3 == 0)
@@ -119,32 +121,78 @@ public class GameField
 
     public void solve()
     {
-        byte[] temp = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-        //Reihen im Quadranten durchgehen
-        for (int row = 0; row < 3; row++)
+        //Jeden einzelnen Quadranten durchgehen
+        for(int quadrantID = 0;quadrantID<9;quadrantID++)
         {
-            for (int num = 0; num < 3; num++)
-            {
-                //System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
+            Quadrant currentQuadrant = quadrants[quadrantID];
 
-                Quadrant currenctQuadrant = quadrants[0];
-                NumberField currentField = currenctQuadrant.rows[row].numberFields[num];
-                if (currentField.getPossibleNumbers().length != 1)
+            //Die Nullen entfernen, damit das Programm schneller ist
+            Vector<Byte> mesh = new Vector<>();
+            mesh.add((byte) 0);
+            LinkedList<Byte> quadrantNumbers = currentQuadrant.getNumbers();
+            quadrantNumbers.removeAll(mesh);
+
+            System.out.println(quadrantNumbers);
+            //Wir gehen die 3 Reihen durch
+            for(int rowID = 0; rowID < 3; rowID++)
+            {
+                System.out.println(currentQuadrant.rows[rowID]);
+                //Wir gehen die 3 Felder einer Reiher durch
+                for(int numberFieldID = 0; numberFieldID < 3; numberFieldID++)
                 {
-                    for (byte number : currenctQuadrant.getNumbers())
-                    {
-                        if (number == 0) continue;
-                        currentField.removeNumber(number);
+                    NumberField currentNumberfield = currentQuadrant.rows[rowID].numberFields[numberFieldID];
+                    //Zahlen, die bereits im Quadranten sind, aus der Anzahl der möglichen Zahlen entfernen
+                    currentNumberfield.getPossibleNumbers().removeAll(quadrantNumbers);
+                    //System.out.println(currentQuadrant.rows[rowID].numberFields[numberFieldID].getPossibleNumbers().toString());
+
+                    //TODO Die Zahlen, die ich in der Reihe ermittelt habe, kann ich sofort auf die anderen numberFields der Reihe anwenden --> Geht schneller (Nur vielleicht umsetzen)
+                    //TODO Code verkleinern, indem ich den in mehrere Methoden aufsplitte hier unten
+                    switch(quadrantID){
+                        case 0:
+                            LinkedList<Byte> rowNumbers = new LinkedList<>();
+
+                            //Die beiden Quadranten rechts ansprechen und Werte holen
+                            for(int offset = 1;offset<3;offset++)
+                            {
+                                //Die Numberfields der Reihen durchgehen und Werte sammeln
+                                for(NumberField num : quadrants[quadrantID+offset].rows[rowID].getNumbers())
+                                {
+                                    byte number = num.getCorrectNumber();
+                                    if(number != 0) rowNumbers.add(number);
+                                }
+                            }
+                            currentNumberfield.getPossibleNumbers().removeAll(rowNumbers);
+
+                            LinkedList<Byte> columnNumbers = new LinkedList<>();
+
+                            //Die beiden Quadranten unten ansprechen und Werte holen
+                            for(int offset = 3;offset<7;offset += 3)
+                            {
+                                //Die Numberfields der Spalten durchgehen und Werte sammeln
+                                for(NumberField num : quadrants[quadrantID+offset].columns[numberFieldID].getNumbers())
+                                {
+                                    byte number = num.getCorrectNumber();
+                                    if(number != 0) columnNumbers.add(number);
+                                }
+                            }
+                            currentNumberfield.getPossibleNumbers().removeAll(columnNumbers);
+
+                            //Zahlen aus der Reihe holen und entfernen --> Reihe ermittelt durch die rowID (Erledigt)
+                            //Zahlen aus der Spalte holen und entfernen --> Spalte ermitteln anhand der numberFieldID (Erledigt)
+                        case 1:
+                        case 2:
+                        case 3: //Gleich
+                        case 4:
+                        case 5:
+                        case 6: //Gleich
+                        case 7:
+                        case 8:
                     }
-                    //System.out.println("Bearbeitung erforderlich");
-                    System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
-                } else
-                {
-                    System.out.println(Arrays.toString(quadrants[0].rows[row].numberFields[num].getPossibleNumbers()));
+                    currentNumberfield.checkForCorrectNumber();
+                    System.out.println(currentQuadrant.rows[rowID].numberFields[numberFieldID].getPossibleNumbers().toString());
                 }
             }
+            System.out.println();
         }
-
     }
 }

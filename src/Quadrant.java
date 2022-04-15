@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 public class Quadrant
 {
     public Row[] rows = new Row[3];
@@ -18,17 +20,15 @@ public class Quadrant
         columns[2] = new Column(numbers[2],numbers[5],numbers[8]);
     }
 
-    public byte[] getNumbers()
+    public LinkedList<Byte> getNumbers()
     {
-        byte[] allNumbers = new byte[9];
-        byte counter = 0;
+        LinkedList<Byte> allNumbers = new LinkedList<>();
 
         for (Row row : rows)
         {
             for (NumberField number : row.getNumbers())
             {
-                allNumbers[counter] = number.getCorrectNumber();
-                counter++;
+                allNumbers.add(number.getCorrectNumber());
             }
         }
 

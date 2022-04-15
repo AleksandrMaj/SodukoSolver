@@ -8,8 +8,6 @@ public class NumberField
     public byte correctNumber;
     public boolean numberUknown = true;
 
-    public static byte[] numberList = {1,2,3,4,5,6,7,8,9};
-
     public NumberField(byte correctNumber)
     {
         if(correctNumber == 0)
@@ -22,10 +20,15 @@ public class NumberField
         this.numberUknown = false;
     }
 
-    public Byte[] getPossibleNumbers()
+    public LinkedList<Byte> getPossibleNumbers()
     {
-        if(possibleNumbers == null) return new Byte[]{correctNumber};
-        return possibleNumbers.toArray(new Byte[0]);
+        if(possibleNumbers == null) {
+            LinkedList<Byte> temp = new LinkedList<>();
+            temp.add(correctNumber);
+            return temp;
+        }
+        return possibleNumbers;
+        /*return possibleNumbers.toArray(new Byte[0]);*/
     }
 
     public byte getCorrectNumber()
@@ -39,20 +42,17 @@ public class NumberField
         this.numberUknown = false;
     }
 
-    public void removeNumber(byte number)
+    public void fillPossibleNumbersArray()
     {
-        possibleNumbers.remove((Object) number);
-        if(possibleNumbers.size() == 1)
+        for(int i = 1;i<10;i++)
         {
-            setCorrectNumber(possibleNumbers.getFirst());
+            possibleNumbers.add((byte) i);
         }
     }
 
-    public void fillPossibleNumbersArray()
+    public void checkForCorrectNumber()
     {
-        for(byte x : numberList)
-        {
-            possibleNumbers.add(x);
-        }
+        if(possibleNumbers != null && possibleNumbers.size() == 1)
+            setCorrectNumber(possibleNumbers.getFirst());
     }
 }
