@@ -21,7 +21,10 @@ public class GameField
         };
         GameField gamefield = new GameField(sodukoData);
 
-        gamefield.solve();
+        for(int i = 0;i<10;i++){
+
+            gamefield.solve();
+        }
 
         gamefield.showSoduko();
     }
@@ -122,7 +125,7 @@ public class GameField
     public void solve()
     {
         //Jeden einzelnen Quadranten durchgehen
-        for(int quadrantID = 0;quadrantID<9;quadrantID++)
+        for (byte quadrantID = 0; quadrantID < 9; quadrantID++)
         {
             Quadrant currentQuadrant = quadrants[quadrantID];
 
@@ -134,65 +137,78 @@ public class GameField
 
             System.out.println(quadrantNumbers);
             //Wir gehen die 3 Reihen durch
-            for(int rowID = 0; rowID < 3; rowID++)
+            for (byte rowID = 0; rowID < 3; rowID++)
             {
                 System.out.println(currentQuadrant.rows[rowID]);
                 //Wir gehen die 3 Felder einer Reiher durch
-                for(int numberFieldID = 0; numberFieldID < 3; numberFieldID++)
+                for (byte numberFieldID = 0; numberFieldID < 3; numberFieldID++)
                 {
                     NumberField currentNumberfield = currentQuadrant.rows[rowID].numberFields[numberFieldID];
                     //Zahlen, die bereits im Quadranten sind, aus der Anzahl der möglichen Zahlen entfernen
                     currentNumberfield.getPossibleNumbers().removeAll(quadrantNumbers);
-                    //System.out.println(currentQuadrant.rows[rowID].numberFields[numberFieldID].getPossibleNumbers().toString());
 
-                    //TODO Die Zahlen, die ich in der Reihe ermittelt habe, kann ich sofort auf die anderen numberFields der Reihe anwenden --> Geht schneller (Nur vielleicht umsetzen)
-                    //TODO Code verkleinern, indem ich den in mehrere Methoden aufsplitte hier unten
-                    switch(quadrantID){
-                        case 0:
-                            LinkedList<Byte> rowNumbers = new LinkedList<>();
+                    LinkedList<Byte> deletingNumbers = new LinkedList<>();
 
-                            //Die beiden Quadranten rechts ansprechen und Werte holen
-                            for(int offset = 1;offset<3;offset++)
-                            {
-                                //Die Numberfields der Reihen durchgehen und Werte sammeln
-                                for(NumberField num : quadrants[quadrantID+offset].rows[rowID].getNumbers())
-                                {
-                                    byte number = num.getCorrectNumber();
-                                    if(number != 0) rowNumbers.add(number);
-                                }
-                            }
-                            currentNumberfield.getPossibleNumbers().removeAll(rowNumbers);
-
-                            LinkedList<Byte> columnNumbers = new LinkedList<>();
-
-                            //Die beiden Quadranten unten ansprechen und Werte holen
-                            for(int offset = 3;offset<7;offset += 3)
-                            {
-                                //Die Numberfields der Spalten durchgehen und Werte sammeln
-                                for(NumberField num : quadrants[quadrantID+offset].columns[numberFieldID].getNumbers())
-                                {
-                                    byte number = num.getCorrectNumber();
-                                    if(number != 0) columnNumbers.add(number);
-                                }
-                            }
-                            currentNumberfield.getPossibleNumbers().removeAll(columnNumbers);
-
-                            //Zahlen aus der Reihe holen und entfernen --> Reihe ermittelt durch die rowID (Erledigt)
-                            //Zahlen aus der Spalte holen und entfernen --> Spalte ermitteln anhand der numberFieldID (Erledigt)
-                        case 1:
-                        case 2:
-                        case 3: //Gleich
-                        case 4:
-                        case 5:
-                        case 6: //Gleich
-                        case 7:
-                        case 8:
+                    //Rows
+                    // 0, 3, 6
+                    if(quadrantID % 3 == 0){
+                        deletingNumbers = getRowNumbers((byte) (quadrantID+1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID+2), rowID, deletingNumbers);
                     }
+                    //1, 4, 7
+                    else if ((quadrantID-1) % 3 == 0){
+                        deletingNumbers = getRowNumbers((byte) (quadrantID-1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID+1), rowID, deletingNumbers);
+                    }
+                    //2, 5, 8
+                    else {
+                        deletingNumbers = getRowNumbers((byte) (quadrantID-1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID-2), rowID, deletingNumbers);
+                    }
+
+                    //Columns
+                    // 0, 1, 2
+                    if(quadrantID < 3){
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID+3), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID+6), numberFieldID, deletingNumbers);
+                    }
+                    //3, 4, 5
+                    else if (quadrantID < 6){
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID-3), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID+3), numberFieldID, deletingNumbers);
+                    }
+                    //6, 7, 8
+                    else {
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID-6), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID-3), numberFieldID, deletingNumbers);
+                    }
+
+                    currentNumberfield.getPossibleNumbers().removeAll(deletingNumbers);
                     currentNumberfield.checkForCorrectNumber();
                     System.out.println(currentQuadrant.rows[rowID].numberFields[numberFieldID].getPossibleNumbers().toString());
                 }
             }
             System.out.println();
         }
+    }
+
+    public LinkedList<Byte> getRowNumbers(byte quadrantID, byte rowID, LinkedList<Byte> list)
+    {
+        for (NumberField num : quadrants[quadrantID].rows[rowID].getNumbers())
+        {
+            byte number = num.getCorrectNumber();
+            if (number != 0 && !list.contains(number)) list.add(number);
+        }
+        return list;
+    }
+
+    public LinkedList<Byte> getColumnNumbers(byte quadrantID, byte numberFieldID, LinkedList<Byte> list)
+    {
+        for (NumberField num : quadrants[quadrantID].columns[numberFieldID].getNumbers())
+        {
+            byte number = num.getCorrectNumber();
+            if (number != 0 && !list.contains(number)) list.add(number);
+        }
+        return list;
     }
 }
