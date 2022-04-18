@@ -25,21 +25,21 @@ public class GameField
         System.out.println("Anzahl zu lösender Fehlder: " + fieldsToSolve);
         gamefield.showSoduko();
 
-        byte round = 1;
+        byte round = 0;
         while(fieldsToSolve != 0)
         {
+            round++;
             gamefield.solve();
             System.out.println("Durchgang: " + round);
             System.out.println("Anzahl zu lösender Fehlder: " + fieldsToSolve);
             gamefield.showSoduko();
-            round++;
         }
         System.out.println("Es wurden " + round + " Durchgänge benötigt!");
     }
 
     public GameField(byte[][] sodukoData)
     {
-        for (int i = 0; i < 9; i++)
+        for (byte i = 0; i < 9; i++)
         {
             quadrants[i] = new Quadrant();
         }
@@ -54,7 +54,7 @@ public class GameField
         byte counter = 0;
 
         //Durch alle Quadranten gehen
-        for (int reps = 0; reps < 9; reps++)
+        for (byte reps = 0; reps < 9; reps++)
         {
             //Durch einen Quadranten gehen
             for (byte dataRow = rowStartPos; dataRow < rowStartPos + 3; dataRow++)
@@ -96,11 +96,11 @@ public class GameField
         byte fieldPosOffset = 0;
         byte rowPosOffset = 0;
 
-        for (int q = 0; q < 9; q++)
+        for (byte q = 0; q < 9; q++)
         {
             LinkedList<Byte> temp = quadrants[q].getNumbers();
 
-            for (int i = 0; i < 9; i++)
+            for (byte i = 0; i < 9; i++)
             {
                 soduko[rowPos][fieldPos] = temp.get(i);
                 fieldPos++;
