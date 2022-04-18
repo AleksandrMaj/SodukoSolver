@@ -2,9 +2,9 @@ public class Column
 {
     NumberField[] numberFields;
 
-    public Column(byte number1, byte number2, byte number3)
+    public Column(NumberField number1, NumberField number2, NumberField number3)
     {
-        numberFields = new NumberField[]{new NumberField(number1), new NumberField(number2), new NumberField(number3)};
+        numberFields = new NumberField[]{number1, number2, number3};
     }
 
     public NumberField[] getNumbers()

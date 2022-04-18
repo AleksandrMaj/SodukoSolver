@@ -1,5 +1,3 @@
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 
 public class NumberField
@@ -12,6 +10,7 @@ public class NumberField
     {
         if(correctNumber == 0)
         {
+            GameField.fieldsToSolve++;
             possibleNumbers = new LinkedList<>();
             fillPossibleNumbersArray();
             return;
@@ -28,7 +27,6 @@ public class NumberField
             return temp;
         }
         return possibleNumbers;
-        /*return possibleNumbers.toArray(new Byte[0]);*/
     }
 
     public byte getCorrectNumber()
@@ -38,12 +36,14 @@ public class NumberField
 
     public void setCorrectNumber(byte correctNumber)
     {
+        GameField.fieldsToSolve--;
         this.correctNumber = correctNumber;
         this.numberUknown = false;
     }
 
     public void fillPossibleNumbersArray()
     {
+        possibleNumbers = new LinkedList<>();
         for(int i = 1;i<10;i++)
         {
             possibleNumbers.add((byte) i);

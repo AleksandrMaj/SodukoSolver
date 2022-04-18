@@ -5,6 +5,7 @@ import java.util.Vector;
 public class GameField
 {
     public Quadrant[] quadrants = new Quadrant[9];
+    public static byte fieldsToSolve = 0;
 
     public static void main(String[] args)
     {
@@ -20,13 +21,20 @@ public class GameField
                 {0, 0, 0, 0, 6, 9, 0, 0, 0}
         };
         GameField gamefield = new GameField(sodukoData);
-
-        for(int i = 0;i<10;i++){
-
-            gamefield.solve();
-        }
-
+        System.out.println("Start");
+        System.out.println("Anzahl zu lösender Fehlder: " + fieldsToSolve);
         gamefield.showSoduko();
+
+        byte round = 1;
+        while(fieldsToSolve != 0)
+        {
+            gamefield.solve();
+            System.out.println("Durchgang: " + round);
+            System.out.println("Anzahl zu lösender Fehlder: " + fieldsToSolve);
+            gamefield.showSoduko();
+            round++;
+        }
+        System.out.println("Es wurden " + round + " Durchgänge benötigt!");
     }
 
     public GameField(byte[][] sodukoData)
@@ -120,6 +128,7 @@ public class GameField
         {
             System.out.println(Arrays.toString(arr));
         }
+        System.out.println();
     }
 
     public void solve()
@@ -135,15 +144,17 @@ public class GameField
             LinkedList<Byte> quadrantNumbers = currentQuadrant.getNumbers();
             quadrantNumbers.removeAll(mesh);
 
-            System.out.println(quadrantNumbers);
             //Wir gehen die 3 Reihen durch
             for (byte rowID = 0; rowID < 3; rowID++)
             {
-                System.out.println(currentQuadrant.rows[rowID]);
                 //Wir gehen die 3 Felder einer Reiher durch
                 for (byte numberFieldID = 0; numberFieldID < 3; numberFieldID++)
                 {
                     NumberField currentNumberfield = currentQuadrant.rows[rowID].numberFields[numberFieldID];
+                    if(currentNumberfield.getCorrectNumber() != 0) continue;
+
+                    currentNumberfield.fillPossibleNumbersArray();
+
                     //Zahlen, die bereits im Quadranten sind, aus der Anzahl der möglichen Zahlen entfernen
                     currentNumberfield.getPossibleNumbers().removeAll(quadrantNumbers);
 
@@ -151,44 +162,48 @@ public class GameField
 
                     //Rows
                     // 0, 3, 6
-                    if(quadrantID % 3 == 0){
-                        deletingNumbers = getRowNumbers((byte) (quadrantID+1), rowID, deletingNumbers);
-                        deletingNumbers = getRowNumbers((byte) (quadrantID+2), rowID, deletingNumbers);
+                    if (quadrantID % 3 == 0)
+                    {
+                        deletingNumbers = getRowNumbers((byte) (quadrantID + 1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID + 2), rowID, deletingNumbers);
                     }
                     //1, 4, 7
-                    else if ((quadrantID-1) % 3 == 0){
-                        deletingNumbers = getRowNumbers((byte) (quadrantID-1), rowID, deletingNumbers);
-                        deletingNumbers = getRowNumbers((byte) (quadrantID+1), rowID, deletingNumbers);
+                    else if ((quadrantID - 1) % 3 == 0)
+                    {
+                        deletingNumbers = getRowNumbers((byte) (quadrantID - 1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID + 1), rowID, deletingNumbers);
                     }
                     //2, 5, 8
-                    else {
-                        deletingNumbers = getRowNumbers((byte) (quadrantID-1), rowID, deletingNumbers);
-                        deletingNumbers = getRowNumbers((byte) (quadrantID-2), rowID, deletingNumbers);
+                    else
+                    {
+                        deletingNumbers = getRowNumbers((byte) (quadrantID - 1), rowID, deletingNumbers);
+                        deletingNumbers = getRowNumbers((byte) (quadrantID - 2), rowID, deletingNumbers);
                     }
 
                     //Columns
                     // 0, 1, 2
-                    if(quadrantID < 3){
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID+3), numberFieldID, deletingNumbers);
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID+6), numberFieldID, deletingNumbers);
+                    if (quadrantID < 3)
+                    {
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID + 3), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID + 6), numberFieldID, deletingNumbers);
                     }
                     //3, 4, 5
-                    else if (quadrantID < 6){
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID-3), numberFieldID, deletingNumbers);
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID+3), numberFieldID, deletingNumbers);
+                    else if (quadrantID < 6)
+                    {
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID - 3), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID + 3), numberFieldID, deletingNumbers);
                     }
                     //6, 7, 8
-                    else {
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID-6), numberFieldID, deletingNumbers);
-                        deletingNumbers = getColumnNumbers((byte) (quadrantID-3), numberFieldID, deletingNumbers);
+                    else
+                    {
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID - 6), numberFieldID, deletingNumbers);
+                        deletingNumbers = getColumnNumbers((byte) (quadrantID - 3), numberFieldID, deletingNumbers);
                     }
 
                     currentNumberfield.getPossibleNumbers().removeAll(deletingNumbers);
                     currentNumberfield.checkForCorrectNumber();
-                    System.out.println(currentQuadrant.rows[rowID].numberFields[numberFieldID].getPossibleNumbers().toString());
                 }
             }
-            System.out.println();
         }
     }
 
